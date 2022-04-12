@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
+import static io.restassured.http.ContentType.JSON;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReqresinTests {
@@ -13,7 +15,7 @@ public class ReqresinTests {
 
     @Test
     @DisplayName("01_GET_SINGLE USER")
-    public void checkGetSingleUser() {
+    void checkGetSingleUser() {
         /*
         Request
         /api/users/2
@@ -36,6 +38,7 @@ public class ReqresinTests {
         }
          */
         String urlRequest = "/api/users/2";
+
         String dataAvatar = "https://reqres.in/img/faces/2-image.jpg";
         String supportUrl = "https://reqres.in/#support-heading";
 
@@ -49,7 +52,7 @@ public class ReqresinTests {
 
     @Test
     @DisplayName("02_GET_SINGLE USER NOT FOUND")
-    public void checkGetUserNotFound() {
+    void checkGetUserNotFound() {
         /*
         Request
         /api/users/23
@@ -73,6 +76,139 @@ public class ReqresinTests {
                 .then()
                 .statusCode(404);
     }
-    
+
+    @Test
+    @DisplayName("03_POST_CREATE")
+    void postCreate() {
+        /*
+        Request
+        /api/users
+
+        {
+        "name": "morpheus",
+        "job": "leader"
+        }
+
+        Response
+        201
+
+        {
+            "name": "morpheus",
+            "job": "leader",
+            "id": "506",
+            "createdAt": "2022-04-12T10:16:38.747Z"
+        }
+        */
+        String urlRequest = "/api/users";
+        String createUser = "{\"name\": \"morpheus\"," +
+                "\"job\": \"leader\"}";
+
+        String name = "morpheus";
+        String job = "leader";
+
+        // option one
+        Response response = given()
+                .body(createUser)
+                .contentType(JSON)
+                .when()
+                .post(baseUrl + urlRequest)
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        assertEquals(name, response.path("name"));
+        assertEquals(job, response.path("job"));
+
+        // option two
+        given()
+                .body(createUser)
+                .contentType(JSON)
+                .when()
+                .post(baseUrl + urlRequest)
+                .then()
+                .statusCode(201)
+                .body("name", is(name))
+                .body("job", is(job));
+    }
+
+    @Test
+    @DisplayName("04_POST_REGISTER SUCCESSFUL")
+    void postRegisterSuccessful() {
+        /*
+        Request
+        /api/register
+
+        {
+            "email": "eve.holt@reqres.in",
+            "password": "pistol"
+        }
+
+        Response
+        200
+
+        {
+            "id": 4,
+            "token": "QpwL5tke4Pnpja7X4"
+        }
+         */
+        String urlRequest = "/api/register";
+        String registerUser = "{\"email\": \"eve.holt@reqres.in\"," +
+                "\"password\": \"pistol\"}";
+
+        String token = "QpwL5tke4Pnpja7X4";
+
+        Response response = given()
+                .body(registerUser)
+                .contentType(JSON)
+                .when()
+                .post(baseUrl + urlRequest)
+                .then()
+                .statusCode(200)
+                .extract().response();
+
+        assertEquals(token, response.path("token"));
+    }
+
+    @Test
+    @DisplayName("05_PUT_UPDATE")
+    void putUpdate() {
+        /*
+        Request
+        /api/users/2
+
+        {
+            "name": "morpheus",
+            "job": "zion resident"
+        }
+
+        Response
+        200
+
+        {
+            "name": "morpheus",
+            "job": "zion resident",
+            "updatedAt": "2022-04-12T12:09:03.412Z"
+        }
+         */
+        String urlRequest = "/api/users/2";
+        String updateUser = "{\"name\": \"morpheus\"," +
+                "\"job\": \"zion resident\"}";
+
+        String name = "morpheus";
+        String job = "zion resident";
+
+        Response response = given()
+                .body(updateUser)
+                .contentType(JSON)
+                .when()
+                .post(baseUrl + urlRequest)
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        System.out.println("123");
+        assertEquals(name, response.path("name"));
+        assertEquals(job, response.path("job"));
+    }
 
 }
