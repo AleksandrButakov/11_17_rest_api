@@ -42,7 +42,7 @@ public class ReqresinTests {
 
     // негативный автотест на авторизацию
     @Test
-    void missingPasswordLogin`() {
+    void missingPasswordLogin() {
         /*
         request: https://reqres.in//api/login
 
@@ -54,16 +54,11 @@ public class ReqresinTests {
 
         response:
         {
-        "token": "QpwL5tke4Pnpja7X4"
-        }
-
-        {
         "error": "Missing password"
         }
          */
 
-        String authorizedData = "{\"email\": \"eve.holt@reqres.in\"," +
-                "\"password\": \"cityslicka\"}";
+        String authorizedData = "{\"email\": \"eve.holt@reqres.in\"}";
 
         given()
                 .body(authorizedData)
@@ -71,9 +66,8 @@ public class ReqresinTests {
                 .when()
                 .post("https://reqres.in/api/login")
                 .then()
-                .statusCode(200)
-                .body("token", is("QpwL5tke4Pnpja7X4"));
+                .statusCode(400)
+                .body("error", is("Missing password"));
     }
-
 
 }

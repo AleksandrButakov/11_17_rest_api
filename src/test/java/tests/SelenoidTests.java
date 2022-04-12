@@ -95,7 +95,7 @@ public class SelenoidTests {
     @Test
     void checkStatus200WithAuth() {
         given()
-                .auth().basic("user1","1234")
+                .auth().basic("user1", "1234")
                 .get("https://selenoid.autotests.cloud/wd/hub/status")
                 .then()
                 .statusCode(200);
@@ -105,7 +105,7 @@ public class SelenoidTests {
     @Test
     void checkStatus200WithAuth1() {
         Response response = given()
-                .auth().basic("user1","1234")
+                .auth().basic("user1", "1234")
                 .get("https://selenoid.autotests.cloud/wd/hub/status")
                 .then()
                 .statusCode(200)
